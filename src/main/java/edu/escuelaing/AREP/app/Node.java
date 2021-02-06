@@ -4,7 +4,7 @@ public class Node<N> {
 
     public N value = null;
     public Node next = null;
-    public int data;
+    public Double data;
 
     public Node(N e){
         this.value = e;

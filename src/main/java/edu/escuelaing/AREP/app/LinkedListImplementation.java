@@ -44,7 +44,7 @@ public class LinkedListImplementation<E> implements Iterable<E>, Serializable {
         };
         return iterator;
     }
-    public void insert (int data){
+    public void insert (Double data){
         Node node = new Node(data);
         node.data = data;
 
@@ -73,7 +73,7 @@ public class LinkedListImplementation<E> implements Iterable<E>, Serializable {
         }
         System.out.println(node.data);
     }
-    public void insertAtStart(int data) throws IndexOutOfBoundsException{
+    public void insertAtStart(Double data) throws IndexOutOfBoundsException{
         Node node = new Node(data);
         node.data = data;
         node.next = null;
