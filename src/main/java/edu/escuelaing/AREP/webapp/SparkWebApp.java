@@ -7,6 +7,7 @@ import spark.Request;
 import spark.Response;
 import static spark.Spark.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import static spark.Spark.get;
@@ -22,19 +23,14 @@ public class SparkWebApp {
      */
     public static void main(String[] args) {
         port(getPort());
-        get("/input", (req, res) -> inputPage(req, res));
-        get("/results", (req, res) -> outputPage(req, res));
+        get("/input", (req, res) -> inputDataPage(req, res));
+        get("/results", (req, res) -> resultsPage(req, res));
     }
-
-
-
-
-
 
     /**
      * This method reads the default port as specified by the PORT variable in
      * the environment.
-     *
+     * <p>
      * Heroku provides the port automatically so you need this to run the
      * project on Heroku.
      */
@@ -45,27 +41,30 @@ public class SparkWebApp {
         return 4567; //returns default port if heroku-port isn't set
 
     }
-    private static String inputPage(Request req, Response res) {
-        String pageContent
-                = "<!DOCTYPE html>"
+
+    private static String inputDataPage(Request req, Response res) {
+        String page ="<!DOCTYPE html>"
                 + "<html>"
+                + "<center>"
                 + "<body>"
-                + "<h2>Calculo de la media y la desviacion estandar</h2>"
+                + "<h1>Calculadora basica</h1>"
                 + "<form action=\"/results\">"
-                + "  Ingrese los numeros que desee que sean procesados, separados por comas <br>"
-                + "  <input type=\"text\" name=\"numbers\" >"
+                + "<h2> ponga los numeros, separados por comas (,)</h2> <br>"
+                + "  <input type=\"text\" name=\"numbers\" size=50 >"
                 + "  <br><br>"
-                + "  <input type=\"submit\" value=\"Submit\">"
+                + "  <input type=\"submit\" value=\"Calculate\" formaction=\"/results\">"
                 + "</form>"
-                + "<p>Si da click en el boton \"Submit\", se enviaran los datos a un pagina llamada \"/results\".</p>"
                 + "</body>"
+                + "</center>"
                 + "</html>";
-        return pageContent;
+
+        return  page;
     }
 
-    private static String outputPage(Request req, Response res) {
 
-        LinkedListImplementation<Double> listaNumeros=new LinkedListImplementation<Double>();
+
+    private static String resultsPage(Request req, Response res) {
+        LinkedListImplementation<Double> listaNumeros=new LinkedListImplementation<>();
         String[] listaNormal= req.queryParams("numbers").split(",");
         String pageContent;
 
@@ -99,5 +98,6 @@ public class SparkWebApp {
 
         return pageContent;
     }
-
 }
+
+
