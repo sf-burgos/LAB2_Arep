@@ -1,9 +1,13 @@
 package edu.escuelaing.AREP.webapp;
 
+import edu.escuelaing.AREP.app.Calculator;
 import edu.escuelaing.AREP.app.LinkedListImplementation;
 import edu.escuelaing.AREP.app.Node;
 import spark.Request;
 import spark.Response;
+import static spark.Spark.*;
+
+import java.util.List;
 
 import static spark.Spark.get;
 import static spark.Spark.port;
@@ -19,8 +23,13 @@ public class SparkWebApp {
     public static void main(String[] args) {
         port(getPort());
         get("/input", (req, res) -> inputPage(req, res));
-        get("/output", (req, res) -> outputPage(req, res));
+        get("/results", (req, res) -> outputPage(req, res));
     }
+
+
+
+
+
 
     /**
      * This method reads the default port as specified by the PORT variable in
@@ -34,72 +43,61 @@ public class SparkWebApp {
             return Integer.parseInt(System.getenv("PORT"));
         }
         return 4567; //returns default port if heroku-port isn't set
-    }
 
-    private static String inputPage(Request req, Response rep) {
-        String page ="<!DOCTYPE html>"
+    }
+    private static String inputPage(Request req, Response res) {
+        String pageContent
+                = "<!DOCTYPE html>"
                 + "<html>"
-                + "<center>"
                 + "<body>"
-                + "<h1>Calculation of the mean and standard deviation</h1>"
+                + "<h2>Calculo de la media y la desviacion estandar</h2>"
                 + "<form action=\"/results\">"
-                + "<h2> Enter the numbers you want to be processed, separated by commas</h2> <br>"
-                + "  <input type=\"text\" name=\"numbers\" size=50 >"
+                + "  Ingrese los numeros que desee que sean procesados, separados por comas <br>"
+                + "  <input type=\"text\" name=\"numbers\" >"
                 + "  <br><br>"
-                + "  <input type=\"submit\" value=\"Calculate\" formaction=\"/output\">"
+                + "  <input type=\"submit\" value=\"Submit\">"
                 + "</form>"
+                + "<p>Si da click en el boton \"Submit\", se enviaran los datos a un pagina llamada \"/results\".</p>"
                 + "</body>"
-                + "</center>"
                 + "</html>";
-
-        return  page;
+        return pageContent;
     }
 
-    private static String outputPage(Request req, Response rep) {
+    private static String outputPage(Request req, Response res) {
 
-        String page;
-        //calculateMedia SD = new calculateMedia();
+        LinkedListImplementation<Double> listaNumeros=new LinkedListImplementation<Double>();
+        String[] listaNormal= req.queryParams("numbers").split(",");
+        String pageContent;
 
-        LinkedListImplementation<Node> lista = new LinkedListImplementation<>();
-        String [] aux = req.queryParams("numbers").split(",");
-
-        for (String x:aux) {
+        for (String i: listaNormal){
             try {
-                lista.insert(Double.parseDouble(x));
-            } catch (NumberFormatException n) {
-                page ="<!DOCTYPE html>"
+                listaNumeros.insert(Double.parseDouble(i));
+            }
+            catch (NumberFormatException n){
+                pageContent
+                        = "<!DOCTYPE html>"
                         + "<html>"
-                        + "<center>"
                         + "<body>"
-                        + "<h1>Data entered incorrectly.</h1>"
-                        + "<form action=\"/DataIncorrectly\">"
-                        + "  <input type=\"submit\" value=\"Ok\" formaction=\"/input\">"
-                        + "</form>"
+                        + "<h2>El formato de ingreso de los numeros no es el correcto</h2>"
                         + "</body>"
-                        + "</center>"
                         + "</html>";
             }
+
         }
 
-        //mean.calculateMean(lista);
-        //SD.(lista);
+        Double media = Calculator.calculateMedia((List<Double>) listaNumeros);
+        Double desviacionEstandar = Calculator.calcularDesviacion((List<Double>) listaNumeros);
 
-        //double Mean = mean.getResult();
-        //double sd = SD.getResult();
-
-        page ="<!DOCTYPE html>"
+        pageContent
+                = "<!DOCTYPE html>"
                 + "<html>"
-                + "<center>"
                 + "<body>"
-                + "<h1>Results.</h1>"
-                + "<h3>Mean: "+Mean+"</h3><br>"
-                //+ "<h3>Standard Deviation: "+sd+"</h3><br>"
-                + "<form action=\"/Ok\">"
-                + "  <input type=\"submit\" value=\"Ok\" formaction=\"/input\">"
-                + "</form>"
+                + "<h3>Media: "+media+"</h3>"
+                + "<h3>Desviacion Estandar: "+desviacionEstandar+"</h3>"
                 + "</body>"
-                + "</center>"
                 + "</html>";
-        return page;
+
+        return pageContent;
     }
+
 }
